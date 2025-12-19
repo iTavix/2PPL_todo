@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>ToDo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="global-header">
+    <div class="header-brand">
+      <img src="LOGO-fondo BIANCO-2026.png" alt="Logo" class="header-logo" />
+      <span class="header-title">ToDo</span>
+    </div>
+  </header>
+
+  <div class="app-container">
+    
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-group">
+          <div class="logo-text"><p>Pannello di Controllo</p></div>
+        </div>
+        <button class="user-avatar-btn" id="login-toggle-btn" aria-label="Account">
+          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="sidebar-content">
+        
+        <div class="ios-widget calendar-widget">
+          <div class="calendar-header">
+            <button id="prev-month" class="nav-arrow">‹</button>
+            <span id="month-label">Mese</span>
+            <button id="next-month" class="nav-arrow">›</button>
+          </div>
+          <div class="calendar-grid">
+            <div class="weekdays"><span>L</span><span>M</span><span>M</span><span>G</span><span>V</span><span>S</span><span>D</span></div>
+            <div id="calendar-days" class="days"></div>
+          </div>
+        </div>
+
+        <div class="ios-widget team-widget">
+          <div class="widget-header">
+            <span>Team</span>
+            <button id="add-user-btn" class="text-btn">Aggiungi</button>
+          </div>
+          <div id="team-list-container" class="team-admin-list"></div>
+        </div>
+        
+        </div>
+    </aside>
+
+    <div class="resizer" id="resizer"></div>
+
+    <main class="main-content">
+      <header class="main-header">
+        <div class="header-left">
+          <h2 id="selected-date-label">Oggi</h2>
+          <div class="ios-segmented-control">
+            <button id="view-personal" class="segment-btn active">I Miei Impegni</button>
+            <button id="view-team" class="segment-btn">Tutto il Team</button>
+          </div>
+        </div>
+        <button id="add-todo-btn" class="ios-add-btn"><span>+</span> Nuovo</button>
+      </header>
+
+      <div class="scroll-area">
+        <div id="todo-empty" class="empty-state">Nessun impegno</div>
+        <div id="lists-container"></div>
+      </div>
+
+      <footer class="main-footer">
+        <span id="todo-count-total"></span>
+        <span id="todo-count-done"></span>
+        <span id="todo-count-open"></span>
+      </footer>
+    </main>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <div class="modal-overlay" id="modal-backdrop">
+    <div class="ios-modal">
+      <div class="modal-top-bar">
+        <button type="button" id="modal-cancel">Annulla</button>
+        <span id="todo-modal-title" class="modal-title">Nuovo</span>
+        <button type="button" id="modal-save" class="bold-blue">Salva</button>
+      </div>
+      
+      <form id="todo-form" class="modal-scroll-content">
+        <div class="ios-form-group">
+          <input type="text" id="todo-title" placeholder="Titolo" required />
+          <div class="divider"></div>
+          <textarea id="todo-notes" rows="3" placeholder="Note"></textarea>
+        </div>
+
+        <div class="ios-form-group">
+          <div class="form-row">
+            <label>Data</label>
+            <input type="date" id="todo-date" required />
+          </div>
+          <div class="divider"></div>
+          
+          <div class="form-row">
+            <label>Priorità</label>
+            <select id="todo-priority" class="ios-select">
+              <option value="bassa">Bassa</option>
+              <option value="media" selected>Media</option>
+              <option value="alta">Alta 🔴</option>
+            </select>
+          </div>
+          <div class="divider"></div>
+
+          <div class="form-row">
+            <label>Categoria</label>
+            <select id="todo-category" class="ios-select">
+              <option value="Reel-Shorts">📱 Reel & Shorts</option>
+              <option value="Video">🎬 Video</option>
+              <option value="Post IG">📷 Post Instagram</option>
+              <option value="Post YT">📝 Post Community</option>
+              <option value="Generale">📂 Generale</option>
+            </select>
+          </div>
+          <div class="divider"></div>
+
+          <div class="form-row">
+            <label class="toggle-label">Condiviso</label>
+            <label class="apple-switch">
+              <input type="checkbox" id="todo-shared" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="ios-form-group transparent-group">
+          <div class="form-header-label">Partecipanti</div>
+          <div id="participants-container" class="participants-grid"></div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="detail-backdrop">
+    <div class="ios-modal" style="height: auto; max-height: 70vh;">
+      <div class="modal-top-bar">
+        <button type="button" id="detail-close">Chiudi</button>
+        <span class="modal-title">Dettaglio</span>
+        <button type="button" id="detail-edit-btn" class="bold-blue">Modifica</button>
+      </div>
+      <div class="modal-scroll-content" id="detail-content-area">
+        <h3 id="detail-title" style="font-size: 22px; margin-bottom: 10px;">Titolo</h3>
+        <div id="detail-meta" class="detail-badges" style="margin-bottom: 20px;"></div>
+        
+        <div class="ios-form-group" style="padding: 15px;">
+           <p id="detail-notes" class="detail-text" style="font-size: 16px; color: #333; min-height: 20px;"></p>
+        </div>
+
+        <div class="ios-form-group transparent-group">
+          <div class="detail-sublabel" style="margin-bottom: 10px; margin-left: 5px;">Partecipanti</div>
+          <div id="detail-participants" class="detail-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="login-modal-backdrop">
+    <div class="ios-alert">
+      <h3 id="auth-modal-title">Login</h3>
+      <p id="auth-modal-subtitle">Accedi per gestire il calendario</p>
+      <form id="login-form">
+        <input type="email" id="login-email" placeholder="Email" required class="alert-input" />
+        <input type="password" id="login-password" placeholder="Password" required class="alert-input" />
+        <div class="alert-buttons">
+          <button type="button" id="login-modal-cancel">Annulla</button>
+          <button type="submit" class="bold-blue" id="auth-submit-btn">Accedi</button>
+        </div>
+      </form>
+      <div style="margin-top: 15px; font-size: 13px; padding-bottom: 15px;">
+        <span id="auth-switch-text" style="color: #8E8E93;">Non hai un account?</span>
+        <button id="auth-switch-btn" style="background:none; border:none; color:var(--ios-blue); cursor:pointer; font-weight:600;">Registrati</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="user-modal-backdrop">
+    <div class="ios-alert">
+      <h3>Nuovo Membro</h3>
+      <form id="user-form">
+        <input type="text" id="user-name-input" placeholder="Nome" required class="alert-input" />
+        <div class="alert-buttons">
+          <button type="button" id="user-modal-cancel">Annulla</button>
+          <button type="submit" class="bold-blue">Aggiungi</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    if (typeof supabase === 'undefined') {
+      alert("Errore caricamento libreria Supabase. Controlla la connessione internet.");
+    } else {
+      const { createClient } = supabase;
+      window.sb = createClient(
+        "https://snaoaboowzhcnzblgcap.supabase.co",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNuYW9hYm9vd3poY256YmxnY2FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNDg4MjQsImV4cCI6MjA4MTcyNDgyNH0.k0wxDzaExCMBUKprpJR6Pzqpv8AtfFpiJtBAs9e3Jrs"
+      );
+    }
+  </script>
+  <script src="app.js"></script>
+</body>
+</html>
