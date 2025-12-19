@@ -12,11 +12,34 @@ document.addEventListener("DOMContentLoaded", () => {
     user: null,         
     currentMember: null,
     viewMode: 'personal',
-    dragSrcEl: null
+    dragSrcEl: null,
+    unreadTodoIds: new Set() 
   };
 
   // --- REFS ---
   const REFS = {
+    // LAYOUT CONTAINERS
+    landingPage: document.getElementById("landing-page"),
+    appLayout: document.getElementById("app-layout"),
+
+    // LANDING AUTH FORM
+    landingForm: document.getElementById("landing-auth-form"),
+    landingEmail: document.getElementById("landing-email"),
+    landingPass: document.getElementById("landing-password"),
+    landingSwitchBtn: document.getElementById("auth-switch-btn"),
+    authTitle: document.getElementById("auth-title"),
+    authSubtitle: document.getElementById("auth-subtitle"),
+    landingSubmitBtn: document.getElementById("landing-submit-btn"),
+    
+    // HEADER BUTTONS
+    headerLogoutBtn: document.getElementById("header-logout-btn"),
+    headerGuideBtn: document.getElementById("header-guide-btn"),
+
+    // GUIDA MODAL
+    guideBackdrop: document.getElementById("guide-backdrop"),
+    guideCloseBtn: document.getElementById("guide-close-btn"),
+
+    // APP REFS
     monthLabel: document.getElementById("month-label"),
     calendarDays: document.getElementById("calendar-days"),
     selectedDateLabel: document.getElementById("selected-date-label"),
@@ -26,7 +49,9 @@ document.addEventListener("DOMContentLoaded", () => {
     btnViewTeam: document.getElementById("view-team"),
     toastContainer: document.getElementById("toast-container"),
     
-    // Team Management Container
+    sidebar: document.getElementById("sidebar"),
+    sidebarBackdrop: document.getElementById("sidebar-overlay"),
+    mobileMenuBtn: document.getElementById("mobile-menu-btn"),
     teamListContainer: document.getElementById("team-list-container"),
     
     counts: {
@@ -34,7 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
       done: document.getElementById("todo-count-done"),
       open: document.getElementById("todo-count-open")
     },
-    // DETTAGLIO MODAL
     detail: {
       backdrop: document.getElementById("detail-backdrop"),
       title: document.getElementById("detail-title"),
@@ -57,19 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
       partsContainer: document.getElementById("participants-container"),
       btnCancel: document.getElementById("modal-cancel"),
       btnSave: document.getElementById("modal-save")
-    },
-    login: {
-      btn: document.getElementById("login-toggle-btn"),
-      backdrop: document.getElementById("login-modal-backdrop"),
-      form: document.getElementById("login-form"),
-      email: document.getElementById("login-email"),
-      pass: document.getElementById("login-password"),
-      btnCancel: document.getElementById("login-modal-cancel"),
-      title: document.getElementById("auth-modal-title"),
-      subtitle: document.getElementById("auth-modal-subtitle"),
-      submitBtn: document.getElementById("auth-submit-btn"),
-      switchBtn: document.getElementById("auth-switch-btn"),
-      switchText: document.getElementById("auth-switch-text")
     },
     user: {
       addBtn: document.getElementById("add-user-btn"),
@@ -97,13 +108,43 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   const clean = (str) => str ? String(str).trim().toLowerCase() : "";
 
-  // Helper classi categorie
   const getCategoryClass = (cat) => {
     if(!cat) return '';
     return 'cat-' + cat.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
   };
 
-  // --- NOTIFICHE ---
+  // --- MOBILE & GUIDE LOGIC ---
+  function toggleSidebar() {
+    REFS.sidebar.classList.toggle('active');
+    REFS.sidebarBackdrop.classList.toggle('active');
+  }
+  REFS.mobileMenuBtn.onclick = toggleSidebar;
+  REFS.sidebarBackdrop.onclick = toggleSidebar;
+
+  // Gestione Guida Modal
+  REFS.headerGuideBtn.onclick = () => { REFS.guideBackdrop.style.display = "flex"; };
+  REFS.guideCloseBtn.onclick = () => { REFS.guideBackdrop.style.display = "none"; };
+
+  function loadUnreadFromStorage() {
+      const stored = localStorage.getItem('unread_todos');
+      if(stored) {
+          state.unreadTodoIds = new Set(JSON.parse(stored));
+      }
+  }
+
+  function markAsUnread(todoId) {
+      state.unreadTodoIds.add(todoId);
+      localStorage.setItem('unread_todos', JSON.stringify([...state.unreadTodoIds]));
+  }
+
+  function markAsRead(todoId) {
+      if(state.unreadTodoIds.has(todoId)) {
+          state.unreadTodoIds.delete(todoId);
+          localStorage.setItem('unread_todos', JSON.stringify([...state.unreadTodoIds]));
+          renderList();
+      }
+  }
+
   function showToast(message) {
     const toast = document.createElement("div");
     toast.className = "toast";
@@ -115,25 +156,41 @@ document.addEventListener("DOMContentLoaded", () => {
     }, 4000);
   }
 
-  // --- SUPABASE REALTIME ---
   function initRealtime() {
     sb.channel('public:todos')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'todos' }, payload => {
+          
           loadMonthIndicators();
           loadCounts(); 
-          if (payload.new && payload.new.date === toISO(state.selectedDate)) {
-             loadTodos().then(() => renderList());
+          
+          let shouldNotify = false;
+          let message = "";
+
+          if (state.currentMember && payload.new) {
+             const record = payload.new;
+             const parts = record.participants || [];
+             const amIInvolved = parts.some(p => clean(p.name) === clean(state.currentMember.name));
+
+             if (amIInvolved) {
+                 shouldNotify = true;
+                 if (payload.eventType === 'INSERT') message = `🆕 Nuovo impegno: ${record.title}`;
+                 else if (payload.eventType === 'UPDATE') message = `🔄 Aggiornato: ${record.title}`;
+                 markAsUnread(record.id);
+             }
           }
-          if (state.currentMember && payload.eventType === 'INSERT') {
-             const parts = payload.new.participants || [];
-             const involved = parts.some(p => clean(p.name) === clean(state.currentMember.name));
-             if (involved) showToast(`Nuovo task assegnato: ${payload.new.title}`);
+
+          if (payload.new && payload.new.date === toISO(state.selectedDate)) {
+             loadTodos().then(() => {
+                 renderList();
+                 if(shouldNotify) showToast(message);
+             });
+          } else if (shouldNotify) {
+              showToast(message);
           }
       })
       .subscribe();
   }
 
-  // --- VIEW MODE ---
   function setViewMode(mode) {
     state.viewMode = mode;
     REFS.btnViewPersonal.classList.toggle('active', mode === 'personal');
@@ -150,7 +207,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderTeamManagement(); 
   }
 
-  // --- DB CALLS ---
   async function loadCurrentProfile() {
     if (!state.user) { state.currentMember = null; return; }
     const { data } = await sb.from("team_members").select("*").eq("user_id", state.user.id).single();
@@ -208,7 +264,6 @@ document.addEventListener("DOMContentLoaded", () => {
     state.todos = (data||[]).map(t => ({...t, participants: Array.isArray(t.participants)?t.participants:[]}));
   }
 
-  // --- ACTIONS ---
   async function toggleStatus(todo) {
     if (!state.currentMember) return alert("Rifare login.");
     const myName = state.currentMember.name;
@@ -278,8 +333,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // --- RENDERING ---
-  
   function renderCalendar() {
     const y=state.currentDate.getFullYear(), m=state.currentDate.getMonth();
     REFS.monthLabel.textContent = state.currentDate.toLocaleDateString(itLocale, {month:'long', year:'numeric'});
@@ -304,7 +357,16 @@ document.addEventListener("DOMContentLoaded", () => {
         for(let k=0; k<Math.min(state.monthCounts[toISO(d)],3); k++) dots.appendChild(Object.assign(document.createElement("div"),{className:"day-dot"}));
         cell.appendChild(dots);
       }
-      cell.onclick = () => { state.selectedDate = d; state.selectedTodoId = null; renderCalendar(); loadTodos().then(() => { renderList(); }); };
+      cell.onclick = () => { 
+          state.selectedDate = d; 
+          state.selectedTodoId = null; 
+          renderCalendar(); 
+          loadTodos().then(() => { renderList(); }); 
+          if(window.innerWidth <= 768) {
+             REFS.sidebar.classList.remove('active');
+             REFS.sidebarBackdrop.classList.remove('active');
+          }
+      };
       REFS.calendarDays.appendChild(cell);
     }
   }
@@ -365,8 +427,20 @@ document.addEventListener("DOMContentLoaded", () => {
         section.className = "user-todo-section";
         const title = document.createElement("div");
         title.className = "user-section-title";
+        
+        const hasUnread = memberTodos.some(t => state.unreadTodoIds.has(t.id));
+        
         title.textContent = member.name;
-        if(state.currentMember && clean(member.name) === clean(state.currentMember.name)) title.style.color = "var(--ios-blue)";
+        if(state.currentMember && clean(member.name) === clean(state.currentMember.name)) {
+            title.style.color = "var(--ios-blue)";
+        }
+        
+        if(hasUnread) {
+            const dot = document.createElement('span');
+            dot.className = 'notification-dot';
+            title.appendChild(dot);
+        }
+        
         section.appendChild(title);
 
         const ul = document.createElement("ul");
@@ -388,26 +462,36 @@ document.addEventListener("DOMContentLoaded", () => {
           const catClass = getCategoryClass(t.category);
           const catHTML = t.category ? `<span class="category-pill ${catClass}">${t.category}</span>` : '';
           
-          content.innerHTML = `<div class="todo-head-row">${catHTML}<div class="todo-title ${t.done?'done':''}">${t.title}</div></div>`;
+          const unreadClass = state.unreadTodoIds.has(t.id) ? 'font-weight:600' : '';
+          
+          content.innerHTML = `<div class="todo-head-row">${catHTML}<div class="todo-title ${t.done?'done':''}" style="${unreadClass}">${t.title}</div></div>`;
           
           const actions = document.createElement("div"); actions.className = "todo-actions";
-          // ICONE STILIZZATE APPLE (SVG) PER LA LISTA
           actions.innerHTML = `
             <button class="act-btn edit-btn">
-              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-              </svg>
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
             </button>
             <button class="act-btn del-btn">
-              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-              </svg>
+              <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
             </button>`;
-          actions.querySelector(".edit-btn").onclick = (e) => { e.stopPropagation(); openModal(t); };
+          
+          const openTask = () => { 
+              markAsRead(t.id); 
+              state.selectedTodoId=t.id; 
+              if(state.user) renderDetail(); 
+          };
+          
+          const clickEdit = (e) => {
+               e.stopPropagation();
+               markAsRead(t.id);
+               openModal(t);
+          };
+
+          actions.querySelector(".edit-btn").onclick = clickEdit;
           actions.querySelector(".del-btn").onclick = (e) => { e.stopPropagation(); deleteTodo(t.id); };
           
           li.append(check, content, actions);
-          li.onclick = () => { state.selectedTodoId=t.id; renderDetail(); };
+          li.onclick = openTask;
           ul.appendChild(li);
         });
         section.appendChild(ul);
@@ -446,7 +530,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const row = document.createElement("div"); 
         row.className="participant-chip"; 
         row.style.cursor="default";
-        row.innerHTML = `<div class="chip-visual" style="padding:4px 10px; font-size:12px;"><div class="initial" style="width:16px; height:16px; font-size:9px;">${p.name.charAt(0)}</div> ${p.name} ${p.done ? '✅' : ''}</div>`;
+        
+        const statusColor = p.done ? 'var(--ios-green)' : '#C6C6C8';
+        const statusIcon = p.done 
+            ? `<svg width="14" height="14" fill="${statusColor}" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>` 
+            : `<svg width="14" height="14" fill="${statusColor}" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="2" fill="none"/></svg>`;
+
+        row.innerHTML = `
+            <div class="chip-visual" style="padding:6px 12px; font-size:13px; justify-content: space-between; min-width: 120px;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <div class="initial" style="width:20px; height:20px; font-size:10px;">${p.name.charAt(0).toUpperCase()}</div> 
+                    ${p.name} 
+                </div>
+                <div style="margin-left:8px; display:flex; align-items:center;">${statusIcon}</div>
+            </div>`;
+        
         REFS.detail.parts.appendChild(row);
       });
     } else { REFS.detail.parts.textContent = "-"; }
@@ -463,51 +561,41 @@ document.addEventListener("DOMContentLoaded", () => {
     REFS.modal.partsContainer.innerHTML = "";
     const myName = state.currentMember ? state.currentMember.name : "";
     
-    // --- GESTIONE CATEGORIE CON ICONE (Sostituzione Select con Chips) ---
-    // 1. Trova il select originale e nascondilo
     const selectCat = REFS.modal.inputCategory;
     const catRow = selectCat.closest('.form-row'); 
     
-    // Modifica CSS 'al volo' per adattare la griglia se non è già stato fatto
     if(catRow && !catRow.classList.contains('modified-for-grid')) {
-        catRow.style.display = 'block'; // Rimuove flex per far stare la griglia
-        catRow.innerHTML = ''; // Pulisce il contenuto (label e select)
+        catRow.style.display = 'block'; 
+        catRow.innerHTML = ''; 
         catRow.classList.add('modified-for-grid');
         
-        // Ricrea Header Label
         const label = document.createElement('div');
         label.className = 'form-header-label';
         label.style.marginLeft = '0';
         label.textContent = "Categoria";
         catRow.appendChild(label);
 
-        // Crea Container Grid
         const grid = document.createElement('div');
         grid.className = 'participants-grid';
         grid.id = 'custom-cat-grid';
         catRow.appendChild(grid);
         
-        // Definisci le categorie con SVG
         const categories = [
-            { 
-                val: "Reel-Shorts", label: "Reel", 
-                icon: `<svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h6zM5 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H5z"/><path d="M8 14a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>` 
-            },
             { 
                 val: "Video", label: "Video", 
                 icon: `<svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 1a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V1zm4 0v6h8V1H4zm8 8H4v6h8V9zM1 1v2h2V1H1zm2 3H1v2h2V4zM1 7v2h2V7H1zm2 3H1v2h2v-2zm-2 3v2h2v-2H1zM15 1h-2v2h2V1zm-2 3v2h2V4h-2zm2 3h-2v2h2V7zm-2 3v2h2v-2h-2zm2 3h-2v2h2v-2z"/></svg>` 
             },
             { 
-                val: "Post IG", label: "Instagram", 
-                icon: `<svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.917 3.917 0 0 0-1.417.923A3.927 3.927 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.916 3.916 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.926 3.926 0 0 0-.923-1.417A3.911 3.911 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0h.003zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599.28.28.453.546.598.92.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.47 2.47 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.486-.276a2.478 2.478 0 0 1-.919-.598 2.48 2.48 0 0 1-.599-.919c-.11-.281-.24-.705-.275-1.485-.038-.843-.047-1.096-.047-3.232 0-2.136.009-2.388.047-3.231.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92.28-.28.546-.453.92-.598.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045v.002zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92zm-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217zm0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334z"/></svg>` 
+                val: "Reel", label: "Reel", 
+                icon: `<svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M11 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h6zM5 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H5z"/><path d="M8 14a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>` 
             },
             { 
-                val: "Post YT", label: "Community", 
-                icon: `<svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4.414a1 1 0 0 0-.707.293L.854 15.146A.5.5 0 0 1 0 14.793V2zm5 4a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm3 1a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/></svg>` 
+                val: "Short", label: "Short", 
+                icon: `<svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/><path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/></svg>` 
             },
             { 
-                val: "Generale", label: "Generale", 
-                icon: `<svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31L.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3zm-8.322.12C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981l.006.139z"/></svg>` 
+                val: "Storia", label: "Storia", 
+                icon: `<svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/></svg>` 
             }
         ];
 
@@ -517,10 +605,9 @@ document.addEventListener("DOMContentLoaded", () => {
             
             const radio = document.createElement("input");
             radio.type = "radio";
-            radio.name = "custom_cat_opt"; // Nome univoco
+            radio.name = "custom_cat_opt"; 
             radio.value = c.val;
             
-            // Sincronizza il select nascosto
             radio.onchange = () => { selectCat.value = c.val; };
 
             const visual = document.createElement("div");
@@ -531,8 +618,6 @@ document.addEventListener("DOMContentLoaded", () => {
             grid.appendChild(labelEl);
         });
     }
-    
-    // --- FINE INIEZIONE CUSTOM UI ---
 
     state.teamMembers.forEach(m => {
         const label = document.createElement("label"); label.className="participant-chip";
@@ -552,9 +637,8 @@ document.addEventListener("DOMContentLoaded", () => {
         REFS.modal.inputDate.value = todo.date; REFS.modal.inputShared.checked = todo.shared; 
         REFS.modal.inputPriority.value = todo.priority || 'media';
         
-        // Sincronizza Categoria Custom
-        const currentCat = todo.category || 'Reel-Shorts';
-        REFS.modal.inputCategory.value = currentCat; // Setta anche il select nascosto
+        const currentCat = todo.category || 'Video';
+        REFS.modal.inputCategory.value = currentCat; 
         const radios = document.querySelectorAll('input[name="custom_cat_opt"]');
         radios.forEach(r => { r.checked = (r.value === currentCat); });
 
@@ -564,18 +648,15 @@ document.addEventListener("DOMContentLoaded", () => {
         REFS.modal.inputDate.value = toISO(state.selectedDate); REFS.modal.inputShared.checked = true; 
         REFS.modal.inputPriority.value = 'media';
         
-        // Default Categoria Custom
-        REFS.modal.inputCategory.value = 'Reel-Shorts';
+        REFS.modal.inputCategory.value = 'Video';
         const radios = document.querySelectorAll('input[name="custom_cat_opt"]');
-        radios.forEach(r => { r.checked = (r.value === 'Reel-Shorts'); });
+        radios.forEach(r => { r.checked = (r.value === 'Video'); });
     }
   }
 
-  // LISTENERS
   REFS.prevMonth.onclick = () => { const current = state.currentDate; state.currentDate = new Date(current.getFullYear(), current.getMonth()-1, 1, 12, 0, 0); reloadAll(); };
   REFS.nextMonth.onclick = () => { const current = state.currentDate; state.currentDate = new Date(current.getFullYear(), current.getMonth()+1, 1, 12, 0, 0); reloadAll(); };
   
-  // Close Detail Modal
   REFS.detail.btnClose.onclick = () => REFS.detail.backdrop.style.display="none";
 
   REFS.mainAddBtn.onclick = () => openModal(null);
@@ -583,17 +664,83 @@ document.addEventListener("DOMContentLoaded", () => {
   REFS.modal.btnSave.onclick = () => saveTodo(REFS.modal.form.dataset.editId);
   
   let isSignUpMode = false;
-  function updateAuthModalUI() {
-      if (isSignUpMode) { REFS.login.title.textContent = "Registrazione"; REFS.login.subtitle.textContent = "Crea un account"; REFS.login.submitBtn.textContent = "Registrati"; REFS.login.switchText.textContent = "Hai un account?"; REFS.login.switchBtn.textContent = "Accedi"; } 
-      else { REFS.login.title.textContent = "Login"; REFS.login.subtitle.textContent = "Accedi"; REFS.login.submitBtn.textContent = "Accedi"; REFS.login.switchText.textContent = "Non hai un account?"; REFS.login.switchBtn.textContent = "Registrati"; } REFS.login.form.reset();
+  
+  function toggleLandingAuthMode() {
+      isSignUpMode = !isSignUpMode;
+      if(isSignUpMode) {
+          REFS.authTitle.textContent = "Registrati";
+          REFS.authSubtitle.textContent = "Crea un nuovo account per accedere";
+          REFS.landingSubmitBtn.textContent = "Registrati";
+          REFS.landingSwitchBtn.textContent = "Accedi";
+          document.getElementById('auth-switch-text').textContent = "Hai già un account?";
+      } else {
+          REFS.authTitle.textContent = "Benvenuto";
+          REFS.authSubtitle.textContent = "Accedi per continuare";
+          REFS.landingSubmitBtn.textContent = "Accedi";
+          REFS.landingSwitchBtn.textContent = "Registrati";
+          document.getElementById('auth-switch-text').textContent = "Non hai un account?";
+      }
+      REFS.landingForm.reset();
   }
-  REFS.login.switchBtn.onclick = () => { isSignUpMode = !isSignUpMode; updateAuthModalUI(); };
-  REFS.login.btn.onclick = () => { if(state.user) { if(confirm("Logout?")) { sb.auth.signOut(); state.user=null; state.currentMember=null; reloadAll(); } } else { isSignUpMode = false; updateAuthModalUI(); REFS.login.backdrop.style.display="flex"; } };
-  REFS.login.btnCancel.onclick = () => REFS.login.backdrop.style.display="none";
-  REFS.login.form.onsubmit = async (e) => { e.preventDefault(); const email = REFS.login.email.value.toLowerCase().trim(); const password = REFS.login.pass.value; let data, error; if (isSignUpMode) { const res = await sb.auth.signUp({ email, password }); data = res.data; error = res.error; if (!error && data.user) { alert("Registrazione ok!"); isSignUpMode = false; updateAuthModalUI(); return; } } else { const res = await sb.auth.signInWithPassword({ email, password }); data = res.data; error = res.error; } if(error) alert(error.message); else if (data.user) { state.user = data.user; REFS.login.backdrop.style.display="none"; reloadAll(); } };
-  REFS.user.addBtn.onclick = () => { if(!state.user) return alert("Login!"); REFS.user.backdrop.style.display="flex"; };
-  REFS.user.btnCancel.onclick = () => REFS.user.backdrop.style.display="none";
-  REFS.user.form.onsubmit = async (e) => { e.preventDefault(); await addTeamMember(REFS.user.inputName.value); REFS.user.backdrop.style.display="none"; reloadAll(); };
 
-  (async function(){ renderCalendar(); const {data} = await sb.auth.getUser(); if(data?.user) { state.user=data.user; await reloadAll(); initRealtime(); } })();
+  REFS.landingSwitchBtn.onclick = (e) => { e.preventDefault(); toggleLandingAuthMode(); };
+
+  REFS.landingForm.onsubmit = async (e) => { 
+      e.preventDefault(); 
+      const email = REFS.landingEmail.value.toLowerCase().trim(); 
+      const password = REFS.landingPass.value; 
+      let data, error; 
+      
+      if (isSignUpMode) { 
+          const res = await sb.auth.signUp({ email, password }); 
+          data = res.data; error = res.error; 
+          if (!error && data.user) { 
+              alert("Registrazione effettuata! Ora puoi accedere."); 
+              isSignUpMode = false; toggleLandingAuthMode(); return; 
+          } 
+      } else { 
+          const res = await sb.auth.signInWithPassword({ email, password }); 
+          data = res.data; error = res.error; 
+      } 
+      
+      if(error) alert(error.message); 
+      else if (data.user) { 
+          state.user = data.user; 
+          handleLoginSuccess();
+      } 
+  };
+
+  REFS.headerLogoutBtn.onclick = async () => {
+      if(confirm("Vuoi uscire?")) {
+          await sb.auth.signOut();
+          state.user = null;
+          state.currentMember = null;
+          handleLogout();
+      }
+  };
+
+  function handleLoginSuccess() {
+      REFS.landingPage.style.display = 'none';
+      REFS.appLayout.style.display = 'block';
+      reloadAll();
+      initRealtime();
+  }
+
+  function handleLogout() {
+      REFS.landingPage.style.display = 'flex';
+      REFS.appLayout.style.display = 'none';
+  }
+
+  (async function(){ 
+      renderCalendar(); 
+      loadUnreadFromStorage(); 
+      
+      const {data} = await sb.auth.getUser(); 
+      if(data?.user) { 
+          state.user = data.user;
+          handleLoginSuccess();
+      } else {
+          handleLogout();
+      }
+  })();
 });

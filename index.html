@@ -8,85 +8,125 @@
 </head>
 <body>
 
-  <header class="global-header">
-    <div class="header-brand">
-      <button id="mobile-menu-btn" class="mobile-only-btn" aria-label="Menu">
-        <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-          <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
-        </svg>
-      </button>
-      
-      <img src="LOGO-fondo BIANCO-2026.png" alt="Logo" class="header-logo" />
-      <span class="header-title">ToDo</span>
-    </div>
-  </header>
+  <div id="landing-page" class="landing-container">
+    <div class="landing-content">
+      <div class="landing-header">
+        <img src="LOGO-fondo BIANCO-2026.png" alt="Logo" class="landing-logo" />
+        <h1>ToDo</h1>
+        <p>Collabora, organizza e monitora i tuoi contenuti Video, Reel e Storie.</p>
+      </div>
 
-  <div class="app-container">
-    
-    <div id="sidebar-overlay" class="sidebar-backdrop"></div>
-
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="logo-group">
-          <div class="logo-text"><p>Pannello di Controllo</p></div>
+      <div class="landing-card">
+        <div class="login-wrapper">
+          <h3 id="auth-title">Benvenuto</h3>
+          <p id="auth-subtitle">Accedi per continuare</p>
+          
+          <form id="landing-auth-form">
+            <div class="input-group">
+              <input type="email" id="landing-email" placeholder="Email" required />
+            </div>
+            <div class="input-group">
+              <input type="password" id="landing-password" placeholder="Password" required />
+            </div>
+            <button type="submit" class="landing-btn-primary" id="landing-submit-btn">Accedi</button>
+          </form>
+          
+          <div class="auth-switch">
+            <span id="auth-switch-text">Non hai un account?</span>
+            <button id="auth-switch-btn">Registrati</button>
+          </div>
         </div>
-        <button class="user-avatar-btn" id="login-toggle-btn" aria-label="Account">
-          <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+      </div>
+    </div>
+  </div>
+
+  <div id="app-layout" style="display: none;">
+    
+    <header class="global-header">
+      <div class="header-brand">
+        <button id="mobile-menu-btn" class="mobile-only-btn" aria-label="Menu">
+          <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+          </svg>
+        </button>
+        <img src="LOGO-fondo BIANCO-2026.png" alt="Logo" class="header-logo" />
+        <span class="header-title">ToDo</span>
+      </div>
+      
+      <div class="header-actions">
+        <button id="header-guide-btn" class="header-icon-btn" title="Guida">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </button>
+        
+        <button id="header-logout-btn" class="header-icon-btn logout" title="Esci">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
         </button>
       </div>
+    </header>
 
-      <div class="sidebar-content">
-        
-        <div class="ios-widget calendar-widget">
-          <div class="calendar-header">
-            <button id="prev-month" class="nav-arrow">‹</button>
-            <span id="month-label">Mese</span>
-            <button id="next-month" class="nav-arrow">›</button>
-          </div>
-          <div class="calendar-grid">
-            <div class="weekdays"><span>L</span><span>M</span><span>M</span><span>G</span><span>V</span><span>S</span><span>D</span></div>
-            <div id="calendar-days" class="days"></div>
+    <div class="app-container">
+      <div id="sidebar-overlay" class="sidebar-backdrop"></div>
+
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="logo-group">
+            <div class="logo-text"><p>Pannello di Controllo</p></div>
           </div>
         </div>
 
-        <div class="ios-widget team-widget">
-          <div class="widget-header">
-            <span>Team</span>
-            <button id="add-user-btn" class="text-btn">Aggiungi</button>
+        <div class="sidebar-content">
+          <div class="ios-widget calendar-widget">
+            <div class="calendar-header">
+              <button id="prev-month" class="nav-arrow">‹</button>
+              <span id="month-label">Mese</span>
+              <button id="next-month" class="nav-arrow">›</button>
+            </div>
+            <div class="calendar-grid">
+              <div class="weekdays"><span>L</span><span>M</span><span>M</span><span>G</span><span>V</span><span>S</span><span>D</span></div>
+              <div id="calendar-days" class="days"></div>
+            </div>
           </div>
-          <div id="team-list-container" class="team-admin-list"></div>
-        </div>
-        
-        </div>
-    </aside>
 
-    <div class="resizer" id="resizer"></div>
-
-    <main class="main-content">
-      <header class="main-header">
-        <div class="header-left">
-          <h2 id="selected-date-label">Oggi</h2>
-          <div class="ios-segmented-control">
-            <button id="view-personal" class="segment-btn active">I Miei Impegni</button>
-            <button id="view-team" class="segment-btn">Tutto il Team</button>
+          <div class="ios-widget team-widget">
+            <div class="widget-header">
+              <span>Team</span>
+              <button id="add-user-btn" class="text-btn">Aggiungi</button>
+            </div>
+            <div id="team-list-container" class="team-admin-list"></div>
           </div>
         </div>
-        <button id="add-todo-btn" class="ios-add-btn"><span>+</span> Nuovo</button>
-      </header>
+      </aside>
 
-      <div class="scroll-area">
-        <div id="todo-empty" class="empty-state">Nessun impegno</div>
-        <div id="lists-container"></div>
-      </div>
+      <div class="resizer" id="resizer"></div>
 
-      <footer class="main-footer">
-        <span id="todo-count-total"></span>
-        <span id="todo-count-done"></span>
-        <span id="todo-count-open"></span>
-      </footer>
-    </main>
+      <main class="main-content">
+        <header class="main-header">
+          <div class="header-left">
+            <h2 id="selected-date-label">Oggi</h2>
+            <div class="ios-segmented-control">
+              <button id="view-personal" class="segment-btn active">I Miei Impegni</button>
+              <button id="view-team" class="segment-btn">Tutto il Team</button>
+            </div>
+          </div>
+          <button id="add-todo-btn" class="ios-add-btn"><span>+</span> Nuovo</button>
+        </header>
+
+        <div class="scroll-area">
+          <div id="todo-empty" class="empty-state">Nessun impegno</div>
+          <div id="lists-container"></div>
+        </div>
+
+        <footer class="main-footer">
+          <span id="todo-count-total"></span>
+          <span id="todo-count-done"></span>
+          <span id="todo-count-open"></span>
+        </footer>
+      </main>
+    </div>
   </div>
 
   <div id="toast-container" class="toast-container"></div>
@@ -174,67 +214,57 @@
     </div>
   </div>
 
-  <div class="modal-overlay" id="welcome-backdrop" style="display: none; background: rgba(0,0,0,0.5);">
-    <div class="ios-modal welcome-modal">
-      <div class="welcome-content">
-        <div class="welcome-icon-large">
-             <img src="LOGO-fondo BIANCO-2026.png" alt="Logo" style="width: 80px; height: 80px; object-fit: contain;" />
-        </div>
-        <h2 class="welcome-title">Benvenuto in ToDo</h2>
-        <p class="welcome-subtitle">Organizza i tuoi contenuti e collabora con il team in modo semplice.</p>
-
-        <div class="welcome-features">
-          <div class="welcome-feature-row">
-            <div class="feature-icon">
-               <svg width="30" height="30" fill="var(--ios-blue)" viewBox="0 0 16 16"><path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>
-            </div>
-            <div class="feature-text">
-              <h4>I Tuoi Impegni</h4>
-              <p>Visualizza la lista dei tuoi task giornalieri e pianifica il lavoro.</p>
-            </div>
-          </div>
+  <div class="modal-overlay" id="guide-backdrop">
+    <div class="ios-modal">
+      <div class="modal-top-bar">
+        <button type="button" id="guide-close-btn">Chiudi</button>
+        <span class="modal-title">Guida Rapida</span>
+        <div style="width: 40px;"></div> </div>
+      <div class="modal-scroll-content">
+        <div class="ios-form-group" style="padding: 20px;">
+          <h3 style="margin-bottom: 15px; font-size: 20px;">Funzionalità Base</h3>
           
-          <div class="welcome-feature-row">
-            <div class="feature-icon">
-              <svg width="30" height="30" fill="var(--ios-indigo)" viewBox="0 0 16 16"><path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022zM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816zM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275zM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+          <div style="display: flex; gap: 15px; margin-bottom: 20px; align-items: flex-start;">
+            <div style="background: var(--ios-blue); color: white; padding: 8px; border-radius: 8px;">
+              <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>
             </div>
-            <div class="feature-text">
-              <h4>Collaborazione</h4>
-              <p>Segui i progressi del team e spunta i tuoi task completati.</p>
+            <div>
+              <h4 style="font-size: 16px; margin-bottom: 4px;">Calendario e Liste</h4>
+              <p style="font-size: 13px; color: #666; line-height: 1.4;">Naviga tra i giorni usando il calendario a sinistra. Usa il selettore "I Miei Impegni" per vedere solo i tuoi task o "Tutto il Team" per una panoramica completa.</p>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 15px; margin-bottom: 20px; align-items: flex-start;">
+            <div style="background: var(--ios-indigo); color: white; padding: 8px; border-radius: 8px;">
+              <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M2.5 13.5A.5.5 0 0 1 3 13h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zM13.991 3l.024.001a1.5 1.5 0 0 1 1.492 1.492V11a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 3.5 11V4.5a1.5 1.5 0 0 1 1.492-1.492l.024-.001H14zM10.999 4a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 1 0v-6a.5.5 0 0 0-.5-.5z"/></svg>
+            </div>
+            <div>
+              <h4 style="font-size: 16px; margin-bottom: 4px;">Categorie Contenuti</h4>
+              <p style="font-size: 13px; color: #666; line-height: 1.4;">Ogni task può essere categorizzato come <strong>Video</strong>, <strong>Reel</strong>, <strong>Short</strong> o <strong>Storia</strong>, ognuno con il suo colore distintivo per un rapido riconoscimento.</p>
             </div>
           </div>
 
-           <div class="welcome-feature-row">
-            <div class="feature-icon">
-              <svg width="30" height="30" fill="var(--ios-purple)" viewBox="0 0 16 16"><path d="M2.5 13.5A.5.5 0 0 1 3 13h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zM13.991 3l.024.001a1.5 1.5 0 0 1 1.492 1.492V11a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 3.5 11V4.5a1.5 1.5 0 0 1 1.492-1.492l.024-.001H14zM10.999 4a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 1 0v-6a.5.5 0 0 0-.5-.5zM7.999 4a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 1 0v-6a.5.5 0 0 0-.5-.5zM4.999 4a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 1 0v-6a.5.5 0 0 0-.5-.5z"/></svg>
+          <div style="display: flex; gap: 15px; margin-bottom: 20px; align-items: flex-start;">
+            <div style="background: var(--ios-green); color: white; padding: 8px; border-radius: 8px;">
+              <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M12.354 4.354a.5.5 0 0 0-.708-.708L5 10.293 1.854 7.146a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0l7-7zm-4.208 7-.896-.897.707-.707.543.543 6.646-6.647a.5.5 0 0 1 .708.708l-7 7a.5.5 0 0 1-.708 0z"/><path d="m5.354 7.146.896.897-.707.707-.897-.896a.5.5 0 1 1 .708-.708z"/></svg>
             </div>
-            <div class="feature-text">
-              <h4>Contenuti</h4>
-              <p>Gestisci Video, Reel, Short e Storie con categorie dedicate.</p>
+            <div>
+              <h4 style="font-size: 16px; margin-bottom: 4px;">Collaborazione</h4>
+              <p style="font-size: 13px; color: #666; line-height: 1.4;">Clicca sul cerchio accanto a un task per segnare la tua parte come completata. Nella vista dettaglio, vedrai lo stato di tutti i partecipanti.</p>
             </div>
           </div>
-        </div>
 
-        <button id="welcome-continue-btn" class="ios-button-large">Continua</button>
-      </div>
-    </div>
-  </div>
+          <div style="display: flex; gap: 15px; align-items: flex-start;">
+            <div style="background: var(--ios-red); color: white; padding: 8px; border-radius: 8px;">
+              <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/></svg>
+            </div>
+            <div>
+              <h4 style="font-size: 16px; margin-bottom: 4px;">Notifiche</h4>
+              <p style="font-size: 13px; color: #666; line-height: 1.4;">Un <strong>pallino rosso</strong> apparirà accanto al tuo nome quando vieni aggiunto a un nuovo task o se ci sono modifiche. Clicca sul task per segnarlo come letto.</p>
+            </div>
+          </div>
 
-  <div class="modal-overlay" id="login-modal-backdrop">
-    <div class="ios-alert">
-      <h3 id="auth-modal-title">Login</h3>
-      <p id="auth-modal-subtitle">Accedi per gestire il calendario</p>
-      <form id="login-form">
-        <input type="email" id="login-email" placeholder="Email" required class="alert-input" />
-        <input type="password" id="login-password" placeholder="Password" required class="alert-input" />
-        <div class="alert-buttons">
-          <button type="button" id="login-modal-cancel">Annulla</button>
-          <button type="submit" class="bold-blue" id="auth-submit-btn">Accedi</button>
         </div>
-      </form>
-      <div style="margin-top: 15px; font-size: 13px; padding-bottom: 15px;">
-        <span id="auth-switch-text" style="color: #8E8E93;">Non hai un account?</span>
-        <button id="auth-switch-btn" style="background:none; border:none; color:var(--ios-blue); cursor:pointer; font-weight:600;">Registrati</button>
       </div>
     </div>
   </div>
