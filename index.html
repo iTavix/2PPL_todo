@@ -20,17 +20,11 @@
         <div class="login-wrapper">
           <h3 id="auth-title">Benvenuto</h3>
           <p id="auth-subtitle">Accedi per continuare</p>
-          
           <form id="landing-auth-form">
-            <div class="input-group">
-              <input type="email" id="landing-email" placeholder="Email" required />
-            </div>
-            <div class="input-group">
-              <input type="password" id="landing-password" placeholder="Password" required />
-            </div>
+            <div class="input-group"><input type="email" id="landing-email" placeholder="Email" required /></div>
+            <div class="input-group"><input type="password" id="landing-password" placeholder="Password" required /></div>
             <button type="submit" class="landing-btn-primary" id="landing-submit-btn">Accedi</button>
           </form>
-          
           <div class="auth-switch">
             <span id="auth-switch-text">Non hai un account?</span>
             <button id="auth-switch-btn">Registrati</button>
@@ -41,13 +35,10 @@
   </div>
 
   <div id="app-layout" style="display: none;">
-    
     <header class="global-header">
       <div class="header-brand">
         <button id="mobile-menu-btn" class="mobile-only-btn" aria-label="Menu">
-          <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
-          </svg>
+          <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/></svg>
         </button>
         <img src="LOGO-fondo BIANCO-2026.png" alt="Logo" class="header-logo" />
         <span class="header-title">ToDo</span>
@@ -55,29 +46,18 @@
       
       <div class="header-actions">
         <button id="header-guide-btn" class="header-icon-btn" title="Guida">
-          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
         </button>
-        
         <button id="header-logout-btn" class="header-icon-btn logout" title="Esci">
-          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
         </button>
       </div>
     </header>
 
     <div class="app-container">
       <div id="sidebar-overlay" class="sidebar-backdrop"></div>
-
       <aside class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-          <div class="logo-group">
-            <div class="logo-text"><p>Pannello di Controllo</p></div>
-          </div>
-        </div>
-
+        <div class="sidebar-header"><div class="logo-group"><div class="logo-text"><p>Pannello di Controllo</p></div></div></div>
         <div class="sidebar-content">
           <div class="ios-widget calendar-widget">
             <div class="calendar-header">
@@ -90,19 +70,13 @@
               <div id="calendar-days" class="days"></div>
             </div>
           </div>
-
           <div class="ios-widget team-widget">
-            <div class="widget-header">
-              <span>Team</span>
-              <button id="add-user-btn" class="text-btn">Aggiungi</button>
-            </div>
+            <div class="widget-header"><span>Team</span><button id="add-user-btn" class="text-btn">Aggiungi</button></div>
             <div id="team-list-container" class="team-admin-list"></div>
           </div>
         </div>
       </aside>
-
       <div class="resizer" id="resizer"></div>
-
       <main class="main-content">
         <header class="main-header">
           <div class="header-left">
@@ -114,12 +88,10 @@
           </div>
           <button id="add-todo-btn" class="ios-add-btn"><span>+</span> Nuovo</button>
         </header>
-
         <div class="scroll-area">
           <div id="todo-empty" class="empty-state">Nessun impegno</div>
           <div id="lists-container"></div>
         </div>
-
         <footer class="main-footer">
           <span id="todo-count-total"></span>
           <span id="todo-count-done"></span>
@@ -133,137 +105,54 @@
 
   <div class="modal-overlay" id="modal-backdrop">
     <div class="ios-modal">
-      <div class="modal-top-bar">
-        <button type="button" id="modal-cancel">Annulla</button>
-        <span id="todo-modal-title" class="modal-title">Nuovo</span>
-        <button type="button" id="modal-save" class="bold-blue">Salva</button>
-      </div>
-      
+      <div class="modal-top-bar"><button type="button" id="modal-cancel">Annulla</button><span id="todo-modal-title" class="modal-title">Nuovo</span><button type="button" id="modal-save" class="bold-blue">Salva</button></div>
       <form id="todo-form" class="modal-scroll-content">
+        <div class="ios-form-group"><input type="text" id="todo-title" placeholder="Titolo" required /><div class="divider"></div><textarea id="todo-notes" rows="3" placeholder="Note"></textarea></div>
         <div class="ios-form-group">
-          <input type="text" id="todo-title" placeholder="Titolo" required />
-          <div class="divider"></div>
-          <textarea id="todo-notes" rows="3" placeholder="Note"></textarea>
+          <div class="form-row"><label>Data</label><input type="date" id="todo-date" required /></div><div class="divider"></div>
+          <div class="form-row"><label>Priorità</label><select id="todo-priority" class="ios-select"><option value="bassa">Bassa</option><option value="media" selected>Media</option><option value="alta">Alta 🔴</option></select></div><div class="divider"></div>
+          <div class="form-row"><label>Categoria</label><select id="todo-category" class="ios-select"><option value="Video">Video</option><option value="Reel">Reel</option><option value="Short">Short</option><option value="Storia">Storia</option></select></div><div class="divider"></div>
+          <div class="form-row"><label class="toggle-label">Condiviso</label><label class="apple-switch"><input type="checkbox" id="todo-shared" checked><span class="slider"></span></label></div>
         </div>
-
-        <div class="ios-form-group">
-          <div class="form-row">
-            <label>Data</label>
-            <input type="date" id="todo-date" required />
-          </div>
-          <div class="divider"></div>
-          
-          <div class="form-row">
-            <label>Priorità</label>
-            <select id="todo-priority" class="ios-select">
-              <option value="bassa">Bassa</option>
-              <option value="media" selected>Media</option>
-              <option value="alta">Alta 🔴</option>
-            </select>
-          </div>
-          <div class="divider"></div>
-
-          <div class="form-row">
-            <label>Categoria</label>
-            <select id="todo-category" class="ios-select">
-              <option value="Video">Video</option>
-              <option value="Reel">Reel</option>
-              <option value="Short">Short</option>
-              <option value="Storia">Storia</option>
-            </select>
-          </div>
-          <div class="divider"></div>
-
-          <div class="form-row">
-            <label class="toggle-label">Condiviso</label>
-            <label class="apple-switch">
-              <input type="checkbox" id="todo-shared" checked>
-              <span class="slider"></span>
-            </label>
-          </div>
-        </div>
-
-        <div class="ios-form-group transparent-group">
-          <div class="form-header-label">Partecipanti</div>
-          <div id="participants-container" class="participants-grid"></div>
-        </div>
+        <div class="ios-form-group transparent-group"><div class="form-header-label">Partecipanti</div><div id="participants-container" class="participants-grid"></div></div>
       </form>
     </div>
   </div>
 
   <div class="modal-overlay" id="detail-backdrop">
     <div class="ios-modal" style="height: auto; max-height: 85vh;">
-      <div class="modal-top-bar">
-        <button type="button" id="detail-close">Chiudi</button>
-        <span class="modal-title">Dettaglio</span>
-        <button type="button" id="detail-edit-btn" class="bold-blue">Modifica</button>
-      </div>
+      <div class="modal-top-bar"><button type="button" id="detail-close">Chiudi</button><span class="modal-title">Dettaglio</span><button type="button" id="detail-edit-btn" class="bold-blue">Modifica</button></div>
       <div class="modal-scroll-content" id="detail-content-area">
         <h3 id="detail-title" style="font-size: 22px; margin-bottom: 10px;">Titolo</h3>
         <div id="detail-meta" class="detail-badges" style="margin-bottom: 20px;"></div>
-        
-        <div class="ios-form-group" style="padding: 15px;">
-           <p id="detail-notes" class="detail-text" style="font-size: 16px; color: #333; min-height: 20px;"></p>
-        </div>
-
-        <div class="ios-form-group transparent-group">
-          <div class="detail-sublabel" style="margin-bottom: 10px; margin-left: 5px;">Partecipanti</div>
-          <div id="detail-participants" class="detail-list" style="display:flex; flex-direction:column; gap:8px;"></div>
-        </div>
+        <div class="ios-form-group" style="padding: 15px;"><p id="detail-notes" class="detail-text" style="font-size: 16px; color: #333; min-height: 20px;"></p></div>
+        <div class="ios-form-group transparent-group"><div class="detail-sublabel" style="margin-bottom: 10px; margin-left: 5px;">Partecipanti</div><div id="detail-participants" class="detail-list" style="display:flex; flex-direction:column; gap:8px;"></div></div>
       </div>
     </div>
   </div>
 
   <div class="modal-overlay" id="guide-backdrop">
     <div class="ios-modal">
-      <div class="modal-top-bar">
-        <button type="button" id="guide-close-btn">Chiudi</button>
-        <span class="modal-title">Guida Rapida</span>
-        <div style="width: 40px;"></div> </div>
+      <div class="modal-top-bar"><button type="button" id="guide-close-btn">Chiudi</button><span class="modal-title">Guida Rapida</span><div style="width: 40px;"></div></div>
       <div class="modal-scroll-content">
         <div class="ios-form-group" style="padding: 20px;">
           <h3 style="margin-bottom: 15px; font-size: 20px;">Funzionalità Base</h3>
-          
           <div style="display: flex; gap: 15px; margin-bottom: 20px; align-items: flex-start;">
-            <div style="background: var(--ios-blue); color: white; padding: 8px; border-radius: 8px;">
-              <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg>
-            </div>
-            <div>
-              <h4 style="font-size: 16px; margin-bottom: 4px;">Calendario e Liste</h4>
-              <p style="font-size: 13px; color: #666; line-height: 1.4;">Naviga tra i giorni usando il calendario a sinistra. Usa il selettore "I Miei Impegni" per vedere solo i tuoi task o "Tutto il Team" per una panoramica completa.</p>
-            </div>
+            <div style="background: var(--ios-blue); color: white; padding: 8px; border-radius: 8px;"><svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"/><path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/></svg></div>
+            <div><h4 style="font-size: 16px; margin-bottom: 4px;">Calendario e Liste</h4><p style="font-size: 13px; color: #666; line-height: 1.4;">Naviga tra i giorni usando il calendario a sinistra. Usa il selettore "I Miei Impegni" per vedere solo i tuoi task o "Tutto il Team" per una panoramica completa.</p></div>
           </div>
-
           <div style="display: flex; gap: 15px; margin-bottom: 20px; align-items: flex-start;">
-            <div style="background: var(--ios-indigo); color: white; padding: 8px; border-radius: 8px;">
-              <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M2.5 13.5A.5.5 0 0 1 3 13h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zM13.991 3l.024.001a1.5 1.5 0 0 1 1.492 1.492V11a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 3.5 11V4.5a1.5 1.5 0 0 1 1.492-1.492l.024-.001H14zM10.999 4a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 1 0v-6a.5.5 0 0 0-.5-.5z"/></svg>
-            </div>
-            <div>
-              <h4 style="font-size: 16px; margin-bottom: 4px;">Categorie Contenuti</h4>
-              <p style="font-size: 13px; color: #666; line-height: 1.4;">Ogni task può essere categorizzato come <strong>Video</strong>, <strong>Reel</strong>, <strong>Short</strong> o <strong>Storia</strong>, ognuno con il suo colore distintivo per un rapido riconoscimento.</p>
-            </div>
+            <div style="background: var(--ios-indigo); color: white; padding: 8px; border-radius: 8px;"><svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M2.5 13.5A.5.5 0 0 1 3 13h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zM13.991 3l.024.001a1.5 1.5 0 0 1 1.492 1.492V11a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 3.5 11V4.5a1.5 1.5 0 0 1 1.492-1.492l.024-.001H14zM10.999 4a.5.5 0 0 0-.5.5v6a.5.5 0 0 0 1 0v-6a.5.5 0 0 0-.5-.5z"/></svg></div>
+            <div><h4 style="font-size: 16px; margin-bottom: 4px;">Categorie Contenuti</h4><p style="font-size: 13px; color: #666; line-height: 1.4;">Ogni task può essere categorizzato come <strong>Video</strong>, <strong>Reel</strong>, <strong>Short</strong> o <strong>Storia</strong>, ognuno con il suo colore distintivo per un rapido riconoscimento.</p></div>
           </div>
-
           <div style="display: flex; gap: 15px; margin-bottom: 20px; align-items: flex-start;">
-            <div style="background: var(--ios-green); color: white; padding: 8px; border-radius: 8px;">
-              <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M12.354 4.354a.5.5 0 0 0-.708-.708L5 10.293 1.854 7.146a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0l7-7zm-4.208 7-.896-.897.707-.707.543.543 6.646-6.647a.5.5 0 0 1 .708.708l-7 7a.5.5 0 0 1-.708 0z"/><path d="m5.354 7.146.896.897-.707.707-.897-.896a.5.5 0 1 1 .708-.708z"/></svg>
-            </div>
-            <div>
-              <h4 style="font-size: 16px; margin-bottom: 4px;">Collaborazione</h4>
-              <p style="font-size: 13px; color: #666; line-height: 1.4;">Clicca sul cerchio accanto a un task per segnare la tua parte come completata. Nella vista dettaglio, vedrai lo stato di tutti i partecipanti.</p>
-            </div>
+            <div style="background: var(--ios-green); color: white; padding: 8px; border-radius: 8px;"><svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M12.354 4.354a.5.5 0 0 0-.708-.708L5 10.293 1.854 7.146a.5.5 0 1 0-.708.708l3.5 3.5a.5.5 0 0 0 .708 0l7-7zm-4.208 7-.896-.897.707-.707.543.543 6.646-6.647a.5.5 0 0 1 .708.708l-7 7a.5.5 0 0 1-.708 0z"/><path d="m5.354 7.146.896.897-.707.707-.897-.896a.5.5 0 1 1 .708-.708z"/></svg></div>
+            <div><h4 style="font-size: 16px; margin-bottom: 4px;">Collaborazione</h4><p style="font-size: 13px; color: #666; line-height: 1.4;">Clicca sul cerchio accanto a un task per segnare la tua parte come completata. Nella vista dettaglio, vedrai lo stato di tutti i partecipanti.</p></div>
           </div>
-
           <div style="display: flex; gap: 15px; align-items: flex-start;">
-            <div style="background: var(--ios-red); color: white; padding: 8px; border-radius: 8px;">
-              <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/></svg>
-            </div>
-            <div>
-              <h4 style="font-size: 16px; margin-bottom: 4px;">Notifiche</h4>
-              <p style="font-size: 13px; color: #666; line-height: 1.4;">Un <strong>pallino rosso</strong> apparirà accanto al tuo nome quando vieni aggiunto a un nuovo task o se ci sono modifiche. Clicca sul task per segnarlo come letto.</p>
-            </div>
+            <div style="background: var(--ios-red); color: white; padding: 8px; border-radius: 8px;"><svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16"><path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/></svg></div>
+            <div><h4 style="font-size: 16px; margin-bottom: 4px;">Notifiche</h4><p style="font-size: 13px; color: #666; line-height: 1.4;">Un <strong>pallino rosso</strong> apparirà accanto al tuo nome quando vieni aggiunto a un nuovo task o se ci sono modifiche. Clicca sul task per segnarlo come letto.</p></div>
           </div>
-
         </div>
       </div>
     </div>
@@ -272,27 +161,14 @@
   <div class="modal-overlay" id="user-modal-backdrop">
     <div class="ios-alert">
       <h3>Nuovo Membro</h3>
-      <form id="user-form">
-        <input type="text" id="user-name-input" placeholder="Nome" required class="alert-input" />
-        <div class="alert-buttons">
-          <button type="button" id="user-modal-cancel">Annulla</button>
-          <button type="submit" class="bold-blue">Aggiungi</button>
-        </div>
-      </form>
+      <form id="user-form"><input type="text" id="user-name-input" placeholder="Nome" required class="alert-input" /><div class="alert-buttons"><button type="button" id="user-modal-cancel">Annulla</button><button type="submit" class="bold-blue">Aggiungi</button></div></form>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    if (typeof supabase === 'undefined') {
-      alert("Errore caricamento libreria Supabase. Controlla la connessione internet.");
-    } else {
-      const { createClient } = supabase;
-      window.sb = createClient(
-        "https://snaoaboowzhcnzblgcap.supabase.co",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNuYW9hYm9vd3poY256YmxnY2FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNDg4MjQsImV4cCI6MjA4MTcyNDgyNH0.k0wxDzaExCMBUKprpJR6Pzqpv8AtfFpiJtBAs9e3Jrs"
-      );
-    }
+    if (typeof supabase === 'undefined') { alert("Errore caricamento libreria Supabase."); } 
+    else { const { createClient } = supabase; window.sb = createClient("https://snaoaboowzhcnzblgcap.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNuYW9hYm9vd3poY256YmxnY2FwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYxNDg4MjQsImV4cCI6MjA4MTcyNDgyNH0.k0wxDzaExCMBUKprpJR6Pzqpv8AtfFpiJtBAs9e3Jrs"); }
   </script>
   <script src="app.js"></script>
 </body>

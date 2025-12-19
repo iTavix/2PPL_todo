@@ -26,7 +26,9 @@ body {
   font-family: var(--font-stack);
   background-color: var(--ios-bg);
   color: var(--ios-text);
+  /* FIX MOBILE: Usa dvh per escludere la barra del browser dall'altezza */
   height: 100vh;
+  height: 100dvh; 
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -34,7 +36,9 @@ body {
 
 /* --- LANDING PAGE / LOGIN STYLE --- */
 .landing-container {
-  width: 100%; height: 100vh;
+  width: 100%; 
+  height: 100vh;
+  height: 100dvh; /* Fix mobile */
   background: linear-gradient(135deg, #F2F2F7 0%, #FFFFFF 100%);
   display: flex; align-items: center; justify-content: center;
   position: absolute; top:0; left:0; z-index: 5000;
@@ -100,7 +104,7 @@ body {
 
 /* STILE BOTTONI HEADER (Logout & Guida) */
 .header-icon-btn {
-  background: #F2F2F7; /* Sfondo leggero */
+  background: #F2F2F7;
   border: none;
   width: 36px; height: 36px;
   border-radius: 50%;
@@ -118,7 +122,9 @@ body {
 /* LAYOUT PRINCIPALE */
 .app-container {
   display: flex;
+  /* FIX MOBILE: Calcolo altezza basato su dvh per evitare problemi con url bar */
   height: calc(100vh - var(--header-height));
+  height: calc(100dvh - var(--header-height));
   width: 100%;
   position: relative;
 }
@@ -261,7 +267,16 @@ body {
 .cat-generale { background: rgba(142, 142, 147, 0.15); color: var(--ios-text-secondary); }
 
 /* FOOTER */
-.main-footer { padding: 12px 20px; border-top: 1px solid var(--ios-separator); font-size: 11px; color: var(--ios-text-secondary); display: flex; justify-content: space-around; background: #F9F9F9; }
+.main-footer { 
+    padding: 12px 20px; 
+    /* FIX MOBILE FOOTER: Aggiunge spazio extra per la barra home degli smartphone */
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--ios-separator); 
+    font-size: 11px; color: var(--ios-text-secondary); 
+    display: flex; justify-content: space-around; 
+    background: #F9F9F9; 
+    flex-shrink: 0;
+}
 
 /* MODALS - Stile Card Centrata */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); backdrop-filter: blur(2px); display: none; align-items: center; justify-content: center; z-index: 2000; }
@@ -349,16 +364,16 @@ body {
   .header-left { width: 100%; display:flex; flex-direction:column; }
   .ios-segmented-control { width: 100%; }
   .ios-add-btn { position: absolute; right: 15px; top: 18px; }
-  .header-actions { position: absolute; right: 15px; top: 15px; } /* Posizionamento pulsanti header mobile */
+  .header-actions { position: absolute; right: 15px; top: 15px; }
 
   .scroll-area { padding: 0 15px; }
   
-  /* MODAL MOBILE: Mantieni Card Centrata */
+  /* MODAL MOBILE: Mantieni Card Centrata e gestisci altezza */
   .ios-modal {
       width: 90%; 
       max-width: 400px;
       height: auto; 
-      max-height: 85vh; 
+      max-height: 85vh; /* Lascia spazio sopra e sotto */
       border-radius: 12px; 
       position: relative; 
       bottom: auto; 
