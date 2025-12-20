@@ -8,38 +8,13 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   const REFS = {
-    landingPage: document.getElementById("landing-page"), 
-    appLayout: document.getElementById("app-layout"), 
-    landingForm: document.getElementById("landing-auth-form"), 
-    landingEmail: document.getElementById("landing-email"), 
-    landingPass: document.getElementById("landing-password"), 
-    landingSwitchBtn: document.getElementById("auth-switch-btn"), 
-    authTitle: document.getElementById("auth-title"), 
-    authSubtitle: document.getElementById("auth-subtitle"), 
-    landingSubmitBtn: document.getElementById("landing-submit-btn"),
-    headerLogoutBtn: document.getElementById("header-logout-btn"), 
-    headerGuideBtn: document.getElementById("header-guide-btn"), 
-    guideBackdrop: document.getElementById("guide-backdrop"), 
-    guideCloseBtn: document.getElementById("guide-close-btn"),
-    monthLabel: document.getElementById("month-label"), 
-    calendarDays: document.getElementById("calendar-days"), 
-    selectedDateLabel: document.getElementById("selected-date-label"), 
-    listsContainer: document.getElementById("lists-container"), 
-    todoEmpty: document.getElementById("todo-empty"), 
-    btnViewPersonal: document.getElementById("view-personal"), 
-    btnViewTeam: document.getElementById("view-team"), 
-    toastContainer: document.getElementById("toast-container"), 
-    sidebar: document.getElementById("sidebar"), 
-    sidebarBackdrop: document.getElementById("sidebar-overlay"), 
-    mobileMenuBtn: document.getElementById("mobile-menu-btn"), 
-    teamListContainer: document.getElementById("team-list-container"),
+    landingPage: document.getElementById("landing-page"), appLayout: document.getElementById("app-layout"), landingForm: document.getElementById("landing-auth-form"), landingEmail: document.getElementById("landing-email"), landingPass: document.getElementById("landing-password"), landingSwitchBtn: document.getElementById("auth-switch-btn"), authTitle: document.getElementById("auth-title"), authSubtitle: document.getElementById("auth-subtitle"), landingSubmitBtn: document.getElementById("landing-submit-btn"),
+    headerLogoutBtn: document.getElementById("header-logout-btn"), headerGuideBtn: document.getElementById("header-guide-btn"), guideBackdrop: document.getElementById("guide-backdrop"), guideCloseBtn: document.getElementById("guide-close-btn"),
+    monthLabel: document.getElementById("month-label"), calendarDays: document.getElementById("calendar-days"), selectedDateLabel: document.getElementById("selected-date-label"), listsContainer: document.getElementById("lists-container"), todoEmpty: document.getElementById("todo-empty"), btnViewPersonal: document.getElementById("view-personal"), btnViewTeam: document.getElementById("view-team"), toastContainer: document.getElementById("toast-container"), sidebar: document.getElementById("sidebar"), sidebarBackdrop: document.getElementById("sidebar-overlay"), mobileMenuBtn: document.getElementById("mobile-menu-btn"), teamListContainer: document.getElementById("team-list-container"),
     counts: { total: document.getElementById("todo-count-total"), done: document.getElementById("todo-count-done"), open: document.getElementById("todo-count-open") },
     detail: { backdrop: document.getElementById("detail-backdrop"), title: document.getElementById("detail-title"), meta: document.getElementById("detail-meta"), notes: document.getElementById("detail-notes"), parts: document.getElementById("detail-participants"), btnClose: document.getElementById("detail-close"), btnEdit: document.getElementById("detail-edit-btn") },
     modal: { backdrop: document.getElementById("modal-backdrop"), form: document.getElementById("todo-form"), title: document.getElementById("todo-modal-title"), inputTitle: document.getElementById("todo-title"), inputNotes: document.getElementById("todo-notes"), inputDate: document.getElementById("todo-date"), inputPriority: document.getElementById("todo-priority"), inputCategory: document.getElementById("todo-category"), inputShared: document.getElementById("todo-shared"), partsContainer: document.getElementById("participants-container"), btnCancel: document.getElementById("modal-cancel"), btnSave: document.getElementById("modal-save") },
-    user: { addBtn: document.getElementById("add-user-btn"), backdrop: document.getElementById("user-modal-backdrop"), form: document.getElementById("user-form"), inputName: document.getElementById("user-name-input"), btnCancel: document.getElementById("user-modal-cancel") }, 
-    mainAddBtn: document.getElementById("add-todo-btn"), 
-    prevMonth: document.getElementById("prev-month"), 
-    nextMonth: document.getElementById("next-month")
+    user: { addBtn: document.getElementById("add-user-btn"), backdrop: document.getElementById("user-modal-backdrop"), form: document.getElementById("user-form"), inputName: document.getElementById("user-name-input"), btnCancel: document.getElementById("user-modal-cancel") }, mainAddBtn: document.getElementById("add-todo-btn"), prevMonth: document.getElementById("prev-month"), nextMonth: document.getElementById("next-month")
   };
 
   const itLocale = "it-IT";
@@ -94,13 +69,32 @@ document.addEventListener("DOMContentLoaded", () => {
     state.monthCounts = c; renderCalendar();
   }
 
+  function setViewMode(mode) { state.viewMode = mode; REFS.btnViewPersonal.classList.toggle('active', mode === 'personal'); REFS.btnViewTeam.classList.toggle('active', mode === 'team'); renderList(); }
+  REFS.btnViewPersonal.onclick = () => setViewMode('personal'); REFS.btnViewTeam.onclick = () => setViewMode('team');
+
   async function reloadAll() { await loadCurrentProfile(); await Promise.all([loadMonthIndicators(), loadTodos(), loadTeam(), loadCounts()]); renderCalendar(); renderList(); renderTeamManagement(); }
-  
   async function addTeamMember(name) { if(!state.user) return; await sb.from("team_members").insert({ name: name }); await reloadAll(); }
   async function deleteTeamMember(id) { if(!state.user) return; if(confirm("Rimuovere membro?")) { await sb.from("team_members").delete().eq("id", id); reloadAll(); } }
   async function loadTeam() { if(!state.user) return; const {data} = await sb.from("team_members").select("*").order("created_at"); state.teamMembers = data || []; }
   async function loadCounts() { if(!state.user) return; const {data} = await sb.from("todos").select("participants").eq("done", false); const c = {}; (data||[]).forEach(r => { if(Array.isArray(r.participants)) { r.participants.forEach(p => { if(!p.done) c[p.name]=(c[p.name]||0)+1; }); } }); state.memberCounts = c; renderTeamManagement(); }
   async function loadTodos() { if(!state.user) return; const {data} = await sb.from("todos").select("*").eq("date", toISO(state.selectedDate)).order("position", {ascending: true}); state.todos = (data||[]).map(t => ({...t, participants: Array.isArray(t.participants)?t.participants:[]})); }
+
+  async function toggleStatus(todo) {
+    if (!state.currentMember) return;
+    const myName = state.currentMember.name; const myPartIndex = todo.participants.findIndex(p => clean(p.name) === clean(myName));
+    if(myPartIndex === -1) return;
+    let newParts = JSON.parse(JSON.stringify(todo.participants)); newParts[myPartIndex].done = !newParts[myPartIndex].done; const newDone = newParts.every(p => p.done);
+    await sb.from("todos").update({done: newDone, participants: newParts}).eq("id", todo.id); reloadAll();
+  }
+
+  async function saveTodo(id) {
+    if(!state.user) return;
+    const title = REFS.modal.inputTitle.value.trim(); if(!title) return;
+    const selectedNames = Array.from(document.querySelectorAll('input[name="part-opt"]:checked')).map(c=>c.value);
+    const payload = { title, notes: REFS.modal.inputNotes.value, date: REFS.modal.inputDate.value, shared: REFS.modal.inputShared.checked, participants: selectedNames.map(name => ({name, done: false})), done: false, priority: REFS.modal.inputPriority.value, category: REFS.modal.inputCategory.value };
+    if(id) await sb.from("todos").update(payload).eq("id", id); else await sb.from("todos").insert({...payload, user_id: state.user.id});
+    REFS.modal.backdrop.style.display = "none"; reloadAll();
+  }
 
   function renderCalendar() {
     const y=state.currentDate.getFullYear(), m=state.currentDate.getMonth(); REFS.monthLabel.textContent = state.currentDate.toLocaleDateString(itLocale, {month:'long', year:'numeric'});
@@ -152,20 +146,41 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Eventi UI
+  function renderDetail() {
+    const t = state.todos.find(x => x.id === state.selectedTodoId); if(!t) return;
+    REFS.detail.backdrop.style.display = "flex"; 
+    REFS.detail.title.textContent = t.title; 
+    REFS.detail.notes.textContent = t.notes || "Nessuna nota."; 
+    REFS.detail.meta.innerHTML = t.category ? `<span class="category-pill ${getCategoryClass(t.category)}">${t.category}</span>` : "";
+    REFS.detail.parts.innerHTML = t.participants.map(p => `<div class="participant-chip">${p.name} ${p.done ? '✓' : ''}</div>`).join('');
+    REFS.detail.btnEdit.onclick = () => { REFS.detail.backdrop.style.display = "none"; openModal(t); };
+  }
+
+  function openModal(todo) {
+    REFS.modal.backdrop.style.display = "flex"; REFS.modal.partsContainer.innerHTML = "";
+    state.teamMembers.forEach(m => {
+        const label = document.createElement("label"); label.className="participant-chip";
+        label.innerHTML = `<input type="checkbox" name="part-opt" value="${m.name}" ${todo?.participants.some(p=>p.name===m.name)?'checked':''}> <div class="chip-visual">${m.name}</div>`;
+        REFS.modal.partsContainer.appendChild(label);
+    });
+    if(todo) { REFS.modal.form.dataset.editId = todo.id; REFS.modal.inputTitle.value = todo.title; REFS.modal.inputNotes.value = todo.notes || ""; REFS.modal.inputDate.value = todo.date; } 
+    else { delete REFS.modal.form.dataset.editId; REFS.modal.form.reset(); REFS.modal.inputDate.value = toISO(state.selectedDate); }
+  }
+
   REFS.headerLogoutBtn.onclick = () => sb.auth.signOut().then(() => location.reload());
   REFS.prevMonth.onclick = () => { state.currentDate.setMonth(state.currentDate.getMonth()-1); reloadAll(); };
   REFS.nextMonth.onclick = () => { state.currentDate.setMonth(state.currentDate.getMonth()+1); reloadAll(); };
   REFS.mainAddBtn.onclick = () => openModal(null);
+  REFS.modal.btnSave.onclick = () => saveTodo(REFS.modal.form.dataset.editId);
+  REFS.modal.btnCancel.onclick = () => REFS.modal.backdrop.style.display = "none";
+  REFS.detail.btnClose.onclick = () => REFS.detail.backdrop.style.display = "none";
   REFS.user.addBtn.onclick = () => { REFS.user.backdrop.style.display = "flex"; };
   REFS.user.btnCancel.onclick = () => { REFS.user.backdrop.style.display = "none"; };
   REFS.user.form.onsubmit = (e) => { e.preventDefault(); addTeamMember(REFS.user.inputName.value); REFS.user.backdrop.style.display = "none"; REFS.user.form.reset(); };
 
   REFS.landingForm.onsubmit = async (e) => {
     e.preventDefault();
-    const email = REFS.landingEmail.value;
-    const password = REFS.landingPass.value; // Risolto: Corrisponde all'ID HTML landing-password
-    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    const { data, error } = await sb.auth.signInWithPassword({ email: REFS.landingEmail.value, password: REFS.landingPass.value });
     if (data.user) { state.user = data.user; REFS.landingPage.style.display = 'none'; REFS.appLayout.style.display = 'block'; reloadAll(); initRealtime(); }
     else if(error) alert(error.message);
   };
