@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
         label.innerHTML = `<input type="checkbox" name="part-opt" value="${m.name}" ${todo?.participants.some(p=>p.name===m.name)?'checked':''}> <div class="chip-visual">${m.name}</div>`;
         REFS.modal.partsContainer.appendChild(label);
     });
-    if(todo) { REFS.modal.form.dataset.editId = todo.id; REFS.modal.inputTitle.value = todo.title; REFS.modal.inputNotes.value = todo.notes || ""; REFS.modal.inputDate.value = todo.date; } 
+    if(todo) { REFS.modal.form.dataset.editId = todo.id; REFS.modal.inputTitle.value = todo.title; REFS.modal.inputNotes.value = todo.notes || ""; REFS.modal.inputDate.value = todo.date; REFS.modal.inputCategory.value = todo.category || "Video"; } 
     else { delete REFS.modal.form.dataset.editId; REFS.modal.form.reset(); REFS.modal.inputDate.value = toISO(state.selectedDate); }
   }
 

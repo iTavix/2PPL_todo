@@ -111,7 +111,16 @@
         <div class="ios-form-group">
           <div class="form-row"><label>Data</label><input type="date" id="todo-date" required /></div><div class="divider"></div>
           <div class="form-row"><label>Priorità</label><select id="todo-priority" class="ios-select"><option value="bassa">Bassa</option><option value="media" selected>Media</option><option value="alta">Alta 🔴</option></select></div><div class="divider"></div>
-          <div class="form-row"><label>Categoria</label><select id="todo-category" class="ios-select"><option value="Video">Video</option><option value="Reel">Reel</option><option value="Short">Short</option><option value="Storia">Storia</option></select></div><div class="divider"></div>
+          <div class="form-row">
+            <label>Categoria</label>
+            <select id="todo-category" class="ios-select">
+              <option value="Video">Video</option>
+              <option value="Reel">Reel</option>
+              <option value="Short">Short</option>
+              <option value="Storia">Storia</option>
+              <option value="Immagini">Immagini</option>
+            </select>
+          </div><div class="divider"></div>
           <div class="form-row"><label class="toggle-label">Condiviso</label><label class="apple-switch"><input type="checkbox" id="todo-shared" checked><span class="slider"></span></label></div>
         </div>
         <div class="ios-form-group transparent-group"><div class="form-header-label">Partecipanti</div><div id="participants-container" class="participants-grid"></div></div>
