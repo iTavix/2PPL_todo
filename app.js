@@ -123,25 +123,58 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function renderList() {
-    REFS.listsContainer.innerHTML = ""; REFS.selectedDateLabel.textContent = state.selectedDate.toLocaleDateString(itLocale, {weekday:'long', day:'numeric', month:'long'});
-    if(state.todos.length === 0) { REFS.todoEmpty.style.display = "block"; return; } REFS.todoEmpty.style.display = "none";
+    REFS.listsContainer.innerHTML = ""; 
+    REFS.selectedDateLabel.textContent = state.selectedDate.toLocaleDateString(itLocale, {weekday:'long', day:'numeric', month:'long'});
+    
+    if(state.todos.length === 0) { REFS.todoEmpty.style.display = "block"; return; } 
+    REFS.todoEmpty.style.display = "none";
+    
     const members = state.viewMode === 'personal' ? (state.currentMember ? [state.currentMember] : []) : state.teamMembers;
+    
     members.forEach(member => {
       const memberTodos = state.todos.filter(t => t.participants.some(p => clean(p.name) === clean(member.name)));
+      
       if(memberTodos.length > 0) {
-        const section = document.createElement("div"); section.className = "user-todo-section";
+        const section = document.createElement("div"); 
+        section.className = "user-todo-section";
         const hasUnread = memberTodos.some(t => state.unreadTodoIds.has(t.id));
+        
         section.innerHTML = `<div class="user-section-title" style="${clean(member.name) === clean(state.currentMember?.name) ? 'color:var(--ios-blue);' : ''}">${member.name}${hasUnread ? '<span class="notification-dot"></span>' : ''}</div>`;
-        const ul = document.createElement("ul"); ul.className = "apple-list";
+        
+        const ul = document.createElement("ul"); 
+        ul.className = "apple-list";
+        
         memberTodos.forEach(t => {
-          const li = document.createElement("li"); li.className = "todo-item";
+          const li = document.createElement("li"); 
+          li.className = "todo-item";
           const unread = state.unreadTodoIds.has(t.id) ? 'font-weight:700;' : '';
-          li.innerHTML = `<div class="check-circle ${t.done?'checked':''}"></div><div class="todo-content"><div class="todo-head-row">${t.category ? `<span class="category-pill ${getCategoryClass(t.category)}">${t.category}</span>` : ''}<div class="todo-title ${t.done?'done':''}" style="${unread}">${t.title}</div></div></div>`;
+
+          let participantsHtml = '';
+          if (t.participants && t.participants.length > 0) {
+              participantsHtml = `<div class="todo-participants-row">` + 
+              t.participants.map(p => 
+                  `<div class="status-badge ${p.done ? 'is-done' : ''}" title="${p.name}">${p.name.charAt(0)}</div>`
+              ).join('') + 
+              `</div>`;
+          }
+
+          li.innerHTML = `
+            <div class="check-circle ${t.done?'checked':''}"></div>
+            <div class="todo-content">
+                <div class="todo-head-row">
+                    ${t.category ? `<span class="category-pill ${getCategoryClass(t.category)}">${t.category}</span>` : ''}
+                    <div class="todo-title ${t.done?'done':''}" style="${unread}">${t.title}</div>
+                </div>
+                ${participantsHtml}
+            </div>`;
+          
           li.onclick = () => { markAsRead(t.id); state.selectedTodoId = t.id; renderDetail(); };
           li.querySelector(".check-circle").onclick = (e) => { e.stopPropagation(); toggleStatus(t); };
           ul.appendChild(li);
         });
-        section.appendChild(ul); REFS.listsContainer.appendChild(section);
+        
+        section.appendChild(ul); 
+        REFS.listsContainer.appendChild(section);
       }
     });
   }
